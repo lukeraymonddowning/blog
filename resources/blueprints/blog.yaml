@@ -1,0 +1,28 @@
+title: Blog
+sections:
+  main:
+    display: Main
+    fields:
+      -
+        handle: summary
+        field:
+          type: text
+      -
+        handle: image
+        field:
+          type: assets
+          max_files: 1
+      -
+        handle: content
+        field:
+          type: markdown
+      -
+        handle: related_posts
+        field:
+          max_items: 3
+          mode: default
+          type: collections
+          instructions: 'Select posts to link to'
+          localizable: false
+          listable: hidden
+          display: 'Related Posts'

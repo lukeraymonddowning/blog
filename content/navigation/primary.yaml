@@ -1,0 +1,9 @@
+title: Primary
+collections:
+  - pages
+tree:
+  -
+    title: Home
+    url: /
+  -
+    entry: 39047b59-d7ef-4281-a68e-07aabc98ebd6

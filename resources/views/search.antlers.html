@@ -1,0 +1,20 @@
+<h1 class="text-4xl mb-4 text-gray-800 font-semibold">{{ title }}</h1>
+
+<ul>
+    {{ search:results }}
+    {{ if no_results }}
+    <h2>Hmmm... the time machine went back to the wrong year.</h2>
+    <p>Why not try a tasty alternative?</p>
+    <img class="w-48 m-auto" src="/assets/undraw_searching_p5ux.svg" alt="No results found">
+    {{ partial:latest-posts }}
+    {{ else }}
+    <li class="mb-8">
+        <a href="{{ url }}">
+            <h4 class="leading-tight">{{ title }}</h4>
+            <span class="text-xs text-gray-500">{{ updated_at format="d/m/Y" }}</span>
+            <p class="mt-1 text-xs text-gray-700">{{ summary | truncate:140:... }}</p>
+        </a>
+    </li>
+    {{ /if }}
+    {{ /search:results }}
+</ul>

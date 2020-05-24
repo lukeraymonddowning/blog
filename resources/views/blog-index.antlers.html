@@ -1,0 +1,41 @@
+<h1 class="text-4xl mb-4 text-gray-800 font-semibold">{{ title }}</h1>
+
+<div class="max-w-5xl">
+    {{ content }}
+</div>
+
+<div class="flex justify-center mb-4">
+    <span class="h-2 w-2 bg-gray-300 rounded-full mr-2"></span>
+    <span class="h-2 w-2 bg-gray-300 rounded-full mr-2"></span>
+    <span class="h-2 w-2 bg-gray-300 rounded-full"></span>
+</div>
+
+<div class="mb-4">
+    <nav>
+        <ul>
+            {{ collection:blogs limit="10" paginate="true" as="posts" }}
+            {{ posts }}
+            <li class="mb-8">
+                <a href="{{ url }}">
+                    <h4 class="leading-tight">{{ title }}</h4>
+                    <span class="text-xs text-gray-500">{{ updated_at format="d/m/Y" }}</span>
+                    <p class="mt-1 text-xs text-gray-700">{{ summary | truncate:140:... }}</p>
+                </a>
+            </li>
+            {{ /posts }}
+
+            {{ if total_items > 10 }}
+            {{ paginate }}
+            <a href="{{ prev_page }}">Previous</a>
+
+            {{ current_page }} of {{ total_pages }} pages
+            (There are {{ total_items }} posts)
+
+            <a href="{{ next_page }}">Next</a>
+            {{ /paginate }}
+            {{ /if }}
+
+            {{ /collection:blogs }}
+        </ul>
+    </nav>
+</div>

@@ -1,0 +1,14 @@
+title: Blogs
+template: blog
+layout: layout
+blueprints:
+  - blog
+  - entry_link
+revisions: false
+route: '/blog/{slug}'
+date: true
+sort_dir: desc
+default_status: draft
+date_behavior:
+  past: public
+  future: private
