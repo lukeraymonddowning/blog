@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Laravel Poser - testing made simple</title>
+    <link rel="stylesheet" href="/css/tailwind.css?id=573fe88a7ab27b07dbd7">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="/js/site.js?id=3c46e2d485f2f3001310"></script>
+</head>
+<body class="bg-gray-50 leading-normal min-h-screen flex flex-col">
+<nav class="flex flex-col sm:flex-row px-4 py-2 justify-between items-baseline" role="navigation" aria-label="Main">
+    <ul class="grid gap-4 grid-flow-col mb-6 sm:mb-0">
+                <li><a
+            class="text-lg pb-1 border-b-2 border-transparent hover:border-teal "
+            href="/">Home</a></li>
+                <li><a
+            class="text-lg pb-1 border-b-2 border-transparent hover:border-teal "
+            href="/blog">Blog</a></li>
+        
+    </ul>
+
+    <form class="w-full sm:w-auto flex" action="/search">
+        <input value=""
+               type="search"
+               name="q"
+               class="flex-grow border-gray-400 border-l border-b border-t rounded-l pr-0 p-2 text-gray-700"
+               placeholder="The world is your oyster...">
+        <button class="flex-shrink-0 border-gray-400 border rounded-r p-2 -ml-2 hover:bg-gray-100"
+                type="submit">
+            Search
+        </button>
+    </form>
+</nav>
+
+<main id="main" class="flex-grow leading-relaxed w-full md:w-3/4 max-w-5xl mx-auto">
+    <div class="mt-4 mx-4">
+        <div class="mb-4">
+    <h1 class="text-4xl text-gray-800 font-semibold leading-tight">Laravel Poser - testing made simple</h1>
+    <span class="text-xs text-gray-500 tracking-widest">Last updated 23/05/2020</span>
+</div>
+
+<p class="text-lg leading-loose text-gray-600">Learn how to give your Laravel tests superpowers, and make your testing workflow 10x more productive.</p>
+
+<img src="/assets/1*SmUO7VvlSq3xySnzzROT5g.png" class="mb-6">
+
+
+<div class="flex justify-center mb-4">
+    <span class="h-2 w-2 bg-gray-300 rounded-full mr-2"></span>
+    <span class="h-2 w-2 bg-gray-300 rounded-full mr-2"></span>
+    <span class="h-2 w-2 bg-gray-300 rounded-full"></span>
+</div>
+
+<div>
+    <p>I’d like to talk to you about Poser, a library created by Yours Truly that helps you turn good Laravel tests into great Laravel tests.</p>
+<p>Here’s the link to the repo on Github: <a href="https://github.com/lukeraymonddowning/poser">https://github.com/lukeraymonddowning/poser</a></p>
+<blockquote>
+<p>“A clever person solves a problem. A wise person avoids it.” — Albert Einstein.</p>
+</blockquote>
+<h3>Introduction</h3>
+<p>I’ve practiced TDD for some time now. Even if you don’t practice TDD, you should be writing tests for your code. Tests give you assurance that your code works. They allow you to refactor without fear, push updates with confidence, and maintain a clean, readable codebase for years to come.</p>
+<p>In Laravel, the majority of tests can be split into two main categories: Unit and Feature. Unit tests are low-level. They often extend PhpUnit’s TestCase, and know nothing of Laravel. These are very useful tests, but more often than not, I tend to find myself writing Feature tests.</p>
+<p>Feature tests extend a special Laravel TestCase (which in turn extends PhpUnit’s TestCase). This Laravel class builds the framework for each test, allowing you to access features of the Laravel framework. 90% of these tests involve building out Eloquent Models.</p>
+<h3>Life without Poser</h3>
+<p>Take a look at this simple example:</p>
+<pre><code class="language-php">/* @test */
+public function a_user_can_have_customers()
+{
+  $user = factory(User::class)-&gt;create();
+  $user-&gt;customers()-&gt;saveMany(
+      factory(Customer::class)-&gt;times(10)-&gt;make()
+  );
+
+  $this-&gt;assertCount(10, $user-&gt;customers);
+}
+</code></pre>
+<p>This test uses the Laravel factory builder to create and persist its models. For this simple test, it works fine. We understand the intent of this code. But in all honesty, few tests are this simple. Take a look at our next example:</p>
+<pre><code class="language-php">/* @test */
+public function a_user_with_an_active_subscription_can_have_up_to_50_customers_with_invoices()
+{
+    $user = factory(User::class)-&gt;create();
+    $user-&gt;subscriptions()-&gt;save(
+        factory(Subscription::class)-&gt;make(['name' =&gt; 'Pro']),
+        ['expires_at' =&gt; now()-&gt;addMonth()]
+    );
+
+    $user-&gt;customers()-&gt;saveMany(
+        factory(Customer::class)-&gt;times(50)-&gt;make()
+    );
+    $user-&gt;customers-&gt;each(function($customer) {
+        $customer-&gt;invoices()-&gt;saveMany(factory(Invoice::class)-&gt;times(10)-&gt;make());
+    });
+    
+    $this-&gt;assertCount(50, $user-&gt;customers);
+    $this-&gt;assertEquals(50 * 10, Invoice::count());
+}
+</code></pre>
+<p>Oof. That doesn’t look so good. My eyes glaze over the first part of the test and just look at the assertions. It would take me a good 30 seconds to understand what is happening here, and that is not a good sign. Arguably, a test that is hard to read is as bad as no tests at all.</p>
+<p>What happens when we need to change the test? What happens when we change our underlying models? It fails, and we have to pick up all the pieces.</p>
+<p>The key to fixing this is class-based model factories. This idea is nothing new. But these magical ponies come with their own set of issues, namely: we have to write the factory classes. This is a lot of work. It certainly solves the problem, which makes you clever, but according to Einstein, you’re not wise.</p>
+<h3>Life with Poser</h3>
+<p>Let’s introduce Poser. To begin, I’m going to show you the first test example written in Poser:</p>
+<pre><code class="language-php">
+/* @test */
+public function a_user_can_have_customers()
+{
+    $user = UserFactory::new()-&gt;withCustomers(10)-&gt;create();
+
+    $this-&gt;assertCount(10, $user-&gt;customers);
+}
+
+</code></pre>
+<p>Ooh, very clean. Already, this is much nicer than the default Laravel factories, and that’s with a very simple test.</p>
+<p>But how much work did it take to implement Poser? How many lines of code did we have to write? <strong>0</strong></p>
+<p>What!? Impossible! Ludicrous! The man’s gone mad!</p>
+<p>No, I’m being completely serious. All we did to get here was to <code>run composer require lukeraymonddowning/poser</code> from our project root, followed by <code>php artisan make:poser</code>. That’s it! Poser does the rest. No classes to write, no logic to implement. Just beautiful tests. Instead of solving the problem, we avoided it. You wisecrack you.</p>
+<p>Okay, but that was the simple test. How about the second example?</p>
+<pre><code class="language-php">/* @test /
+public function a_user_with_an_active_subscription_can_have_up_to_50_customers_with_invoices()
+{
+    $user = UserFactory::new()
+                -&gt;withSubscriptions(
+                    SubscriptionFactory::new()
+                        -&gt;withAttributes(['name' =&gt; 'Pro'])
+                        -&gt;withPivotAttributes(['expires_at' =&gt; now()-&gt;addMonth()])
+                )
+                -&gt;withCustomers(
+                    CustomerFactory::times(50)-&gt;withInvoices(10)
+                )
+                -&gt;create();
+    
+    $this-&gt;assertCount(50, $user-&gt;customers);
+    $this-&gt;assertEquals(50 * 10, Invoice::count());
+}
+</code></pre>
+<p>Compare this with our earlier example. Where our earlier example reads inside-out, this example reads outside-in. Where we have to jump up and down our earlier example to understand it, we can read this example left to right like we’re reading a sentence. Beautiful.</p>
+<p>All that with 0 lines of code. Can we improve this further? Indeed! As it will be likely that we’re going to be often reaching for a user with a subscription in our tests, why don’t we use the power of class-based factories to our advantage? Let’s head into the UserFactory class that Poser created for us, and add a method:</p>
+<pre><code class="language-php">&lt;?php
+
+namespace Tests\Factories;
+
+use Lukeraymonddowning\Poser\Factory;
+
+class UserFactory extends Factory
+{
+
+    public function withActiveSubscription()
+    {
+        $this-&gt;withSubscriptions(
+            SubscriptionFactory::new()
+                -&gt;withAttributes(['name' =&gt; 'Pro'])
+                -&gt;withPivotAttributes(
+                    ['expires_at' =&gt; now()-&gt;addMonth()]
+                )
+        );
+        
+        return $this;
+    }
+
+}
+</code></pre>
+<p>All we did was pull the code out of the test we created and paste it into the Factory. Now let’s rewrite our test to take advantage of this:</p>
+<pre><code class="language-php">/* @test /
+public function a_user_with_an_active_subscription_can_have_up_to_50_customers_with_invoices()
+{
+    $user = UserFactory::new()
+                -&gt;withActiveSubscription()
+                -&gt;withCustomers(CustomerFactory::times(50))
+                -&gt;withInvoices(10)
+                -&gt;create();
+    
+    $this-&gt;assertCount(50, $user-&gt;customers);
+    $this-&gt;assertEquals(50 * 10, Invoice::count());
+}
+</code></pre>
+<p>Isn’t that nice? Our once complex, difficult to understand test is now beautifully simple and easy, all thanks to Poser.</p>
+<h3>Conclusion</h3>
+<p>I’m using Poser in production apps today, as are many others. If you’d like to make your Laravel tests beautiful, simple and powerful, check out Poser on Github at <a href="https://github.com/lukeraymonddowning/poser">https://github.com/lukeraymonddowning/poser</a>.</p>
+<p>Its completely open source under the MIT license, so you’re free to use it for any project you see fit.</p>
+<p>If you’d like to keep up to date with Poser and my other work, or just chat and hang out, follow me on Twitter: <a href="https://twitter.com/LukeDowning19">https://twitter.com/LukeDowning19</a></p>
+<p>Thank you for taking the time to check out my library. I hope it saves you time and makes your life better.</p>
+<p>Happy coding!</p>
+
+</div>
+
+    </div>
+</main>
+<div style="z-index: -1" class="fixed top-0 left-0 w-1/2 lg:w-1/3 h-64 decoration opacity-25 pointer-events-none">
+</div>
+<div style="z-index: -1" class="fixed right-0 bottom-0 w-1/2 lg:w-1/3 h-64 decoration opacity-25 pointer-events-none">
+</div>
+
+<footer class="mt-6 flex flex-col items-center justify-center">
+    <div class="mb-2">
+        <span class="text-sm text-gray-600">Hey, I know my rights, and they're all reserved! Keep it cool.</span>
+    </div>
+    <nav>
+
+    </nav>
+</footer>
+
+</body>
+</html>

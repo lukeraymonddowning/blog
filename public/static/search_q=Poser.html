@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Search</title>
+    <link rel="stylesheet" href="/css/tailwind.css?id=573fe88a7ab27b07dbd7">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="/js/site.js?id=3c46e2d485f2f3001310"></script>
+</head>
+<body class="bg-gray-50 leading-normal min-h-screen flex flex-col">
+<nav class="flex flex-col sm:flex-row px-4 py-2 justify-between items-baseline" role="navigation" aria-label="Main">
+    <ul class="grid gap-4 grid-flow-col mb-6 sm:mb-0">
+                <li><a
+            class="text-lg pb-1 border-b-2 border-transparent hover:border-teal "
+            href="/">Home</a></li>
+                <li><a
+            class="text-lg pb-1 border-b-2 border-transparent hover:border-teal "
+            href="/blog">Blog</a></li>
+        
+    </ul>
+
+    <form class="w-full sm:w-auto flex" action="/search">
+        <input value="Poser"
+               type="search"
+               name="q"
+               class="flex-grow border-gray-400 border-l border-b border-t rounded-l pr-0 p-2 text-gray-700"
+               placeholder="The world is your oyster...">
+        <button class="flex-shrink-0 border-gray-400 border rounded-r p-2 -ml-2 hover:bg-gray-100"
+                type="submit">
+            Search
+        </button>
+    </form>
+</nav>
+
+<main id="main" class="flex-grow leading-relaxed w-full md:w-3/4 max-w-5xl mx-auto">
+    <div class="mt-4 mx-4">
+        <h1 class="text-4xl mb-4 text-gray-800 font-semibold">Search</h1>
+
+<ul>
+            <li class="mb-8">
+        <a href="/assets/poser_ide_screenshot.png">
+            <h4 class="leading-tight">poser_ide_screenshot.png</h4>
+            <span class="text-xs text-gray-500">24/05/2020</span>
+            <p class="mt-1 text-xs text-gray-700"></p>
+        </a>
+    </li>
+                <li class="mb-8">
+        <a href="/blog/a-test-post">
+            <h4 class="leading-tight">Laravel Poser - testing made simple</h4>
+            <span class="text-xs text-gray-500">23/05/2020</span>
+            <p class="mt-1 text-xs text-gray-700">Learn how to give your Laravel tests superpowers, and make your testing workflow 10x more productive.</p>
+        </a>
+    </li>
+        
+</ul>
+
+    </div>
+</main>
+<div style="z-index: -1" class="fixed top-0 left-0 w-1/2 lg:w-1/3 h-64 decoration opacity-25 pointer-events-none">
+</div>
+<div style="z-index: -1" class="fixed right-0 bottom-0 w-1/2 lg:w-1/3 h-64 decoration opacity-25 pointer-events-none">
+</div>
+
+<footer class="mt-6 flex flex-col items-center justify-center">
+    <div class="mb-2">
+        <span class="text-sm text-gray-600">Hey, I know my rights, and they're all reserved! Keep it cool.</span>
+    </div>
+    <nav>
+
+    </nav>
+</footer>
+
+</body>
+</html>

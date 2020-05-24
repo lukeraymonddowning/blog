@@ -2,7 +2,7 @@
     <ul class="grid gap-4 grid-flow-col mb-6 sm:mb-0">
         {{ nav:primary }}
         <li><a
-            class="text-lg pb-1 border-b-2 border-transparent hover:border-teal-500 {{ if is_current }} border-teal-500 {{ /if }}"
+            class="text-lg pb-1 border-b-2 border-transparent hover:border-teal {{ if is_current }} border-teal {{ /if }}"
             href="{{ url }}">{{ title }}</a></li>
         {{ /nav:primary }}
     </ul>
