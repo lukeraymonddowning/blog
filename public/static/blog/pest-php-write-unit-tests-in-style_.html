@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pest PHP - Write Unit Tests in Style | Luke Downing</title>
+    <link rel="stylesheet" href="/css/tailwind.css?id=573fe88a7ab27b07dbd7">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="/js/site.js?id=3c46e2d485f2f3001310"></script>
+</head>
+<body class="bg-gray-50 leading-normal min-h-screen flex flex-col">
+<nav class="flex flex-col sm:flex-row px-4 py-2 justify-between items-baseline" role="navigation" aria-label="Main">
+    <ul class="grid gap-4 grid-flow-col mb-6 sm:mb-0">
+                <li><a
+            class="text-lg pb-1 border-b-2 border-transparent hover:border-teal "
+            href="/">Home</a></li>
+                <li><a
+            class="text-lg pb-1 border-b-2 border-transparent hover:border-teal "
+            href="/blog">Blog</a></li>
+        
+    </ul>
+
+    <form class="w-full sm:w-auto flex" action="/search">
+        <input value=""
+               type="search"
+               name="q"
+               class="flex-grow border-gray-400 border-l border-b border-t rounded-l pr-0 p-2 text-gray-700"
+               placeholder="The world is your oyster...">
+        <button class="flex-shrink-0 border-gray-400 border rounded-r p-2 -ml-2 hover:bg-gray-100"
+                type="submit">
+            Search
+        </button>
+    </form>
+</nav>
+
+<main id="main" class="flex-grow leading-relaxed w-full md:w-3/4 max-w-5xl mx-auto">
+    <div class="mt-4 mx-4">
+        <div class="mb-4">
+    <h1 class="text-4xl text-gray-800 font-semibold leading-tight">Pest PHP - Write Unit Tests in Style</h1>
+    <span class="text-xs text-gray-500 tracking-widest">Last updated 24/05/2020</span>
+</div>
+
+<p class="text-lg leading-loose text-gray-600">Not heard of Pest PHP? Here's why you want to.</p>
+
+<img src="/assets/Screenshot-2020-05-24-at-19.36.04.png" class="mb-6">
+
+
+<div class="flex justify-center mb-4">
+    <span class="h-2 w-2 bg-gray-300 rounded-full mr-2"></span>
+    <span class="h-2 w-2 bg-gray-300 rounded-full mr-2"></span>
+    <span class="h-2 w-2 bg-gray-300 rounded-full"></span>
+</div>
+
+<div>
+    <p>Do you write unit tests in your PHP projects? If you do, you've likely heard of <a href="https://phpunit.readthedocs.io">PhpUnit</a>. Its basically <em>the</em> defacto testing library. It offers all kinds of methods for asserting that your code actually does what you think it does. In fact, it comes bundled in as default with Laravel.</p>
+<p>To get us started, let's look at the example test written in Laravel when you first create a new project:</p>
+<pre><code class="language-php">&lt;?php
+
+namespace Tests\Feature;
+
+use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+class ExampleTest extends TestCase
+{
+    /**
+     * A basic test example.
+     *
+     * @return void
+     */
+    public function testBasicTest()
+    {
+        $response = $this-&gt;get('/');
+
+        $response-&gt;assertStatus(200);
+    }
+}
+</code></pre>
+<p>First thoughts? Wordy. Its all very verbose. Even if we strip whitespace and comments, we're still at 12 lines of code. But we're only actually interested in 3 of them: <code>public function testBasicTest()</code>, <code>$response = $this-&gt;get('/');</code> and <code>$response-&gt;assertStatus(200);</code>.</p>
+<p>Wouldn't it be nice to strip out all that boilerplate code and end up with just the code we're interested in? Yes. Yes, it would. Well, we're not the only ones who think so. <a href="https://twitter.com/enunomaduro">@enunomaduro</a> thinks so too. If you've never heard of him, I might suggest you aquaint yourself. He's fairly well known in the Laravel community, and he's the brain behind <a href="https://laravel-zero.com">Laravel Zero</a>.</p>
+<p>However, unlike you and I, he decided to do something about it. The result? Pest PHP. Please allow me the honour of showing you that same test from earlier, written in Pest:</p>
+<pre><code class="language-php">&lt;?php
+  
+it('works')-&gt;get('/')-&gt;assertStatus(200);
+</code></pre>
+<p>&quot;Wait, what?!? Shut up. Stop it. What are you smoking?&quot;, I hear you say. &quot;My lord, is that... legal?&quot;, I hear you heckle. Not only did we get rid of all the boilerplate, but we were actually able to reduce the entire test to a <em>single line</em>. That in of itself is enough to make Pest PHP worth your time.</p>
+<h2>How does it work?</h2>
+<p>So, what's actually going on here? How are we able to get rid of all the boilerplate, whilst maintaining the same level of functionality?</p>
+<p><strong>Warning: what follows is GREATLY simplified and you should not in anyway feel you know the complete inner workings of PEST after reading the next few paragraphs.</strong></p>
+<p>It starts with the global function <code>it</code> (there's also one called <code>test</code>). In fact, you can head to <code>vendor/pestphp/pest/src/globals.php</code> to see the source for yourself. Pest's <code>composer.json</code> takes care of autoloading that file for you, making it available for all your tests.</p>
+<p>When you call that method, you pass a wonderful string description (no more underscores or camel case) to represent your test, and a closure.</p>
+<p>Pest will return you a fresh new <code>TestCall</code> object, ready to meet the world and get to work (child labour laws are quite lax in Pest). That <code>TestCall</code> object is added to a <code>static TestSuite</code> instance, along with its siblings. That <code>TestSuite</code> is also used by the <code>./vendor/bin/pest</code> command (which you call to actually run the test suite), which calls on a <code>Command</code> class that is itself a subclass of PhpUnit's <code>Command</code> (I hope you're still following, and not asleep at your keyboard).</p>
+<p>Therein lies Pest's little secret to complete interoperability with PhpUnit. It <em>is</em> PhpUnit, with some sweet sweet sugar sprinkled on top to the point where you might as well call it a diabetic doughnut. In fact, all your &quot;classic&quot; PhpUnit tests will work out of the box with Pest! Pretty awesome, huh?</p>
+<p>The <code>Command</code> class has a <code>run</code> method, which loops over each of your tests and, much the same as PhpUnit, throws an error if a test doesn't pass.</p>
+<p>Now, obviously, there is more to it than that. Pest does a fair bit more work, including loading and running plugins (oh yeah, Pest is extendable!), handling datasets (similar to data providers in PhpUnit, but cleaner), and configuring code coverage if you've asked for it.</p>
+<p>However, that brief overview should give you at least a hint into how calling <code>it</code> works. Remember, the answer is never &quot;by magic&quot;.</p>
+<h2>How do I install Pest?</h2>
+<p>Pest PHP has some amazing documentation, so I'll defer to that: <a href="https://pestphp.com/docs/installation/">https://pestphp.com/docs/installation/</a></p>
+<p>Here's the gist:</p>
+<ol>
+<li>Make sure you're using &gt;= PHP 7.3</li>
+<li>Make sure you're using &gt;= PhpUnit 9.0</li>
+<li>Make sure you're using &gt;= nunomaduro/collision 5.0</li>
+<li>Install via composer: <code>composer require pestphp/pest --dev</code>
+</li>
+</ol>
+<p>If you're using Laravel, you can also run <code>php artisan pest:install</code> to make setup even easier, and provide a few extra little goodies.</p>
+<p>Once everything is installed, you're ready for showtime: <code>./vendor/bin/pest</code>.</p>
+<h2>Should I use Pest?</h2>
+<p>I think so, yes. I'll certainly be adopting it going forwards, and I can't see any reason <em>not</em> to use it.</p>
+<p>It runs just as quickly as native PhpUnit (or at least the difference is so small that it is imperceptible), saves you a ton of time writing boilerplate, and saves even more time when you or one of your coding pals comes back to read the test suite.</p>
+<p>In conclusion, I think its a fab little testing tool that will only get better with time, just like your code!</p>
+<p>As one famous disgusting microwavable hamburger company once put it: &quot;What a time to be alive!&quot; Nuno is certainly doing more to make that the case than the hamburger company.</p>
+
+</div>
+
+    </div>
+</main>
+<div style="z-index: -1" class="fixed top-0 left-0 w-1/2 lg:w-1/3 h-64 decoration opacity-25 pointer-events-none">
+</div>
+<div style="z-index: -1" class="fixed right-0 bottom-0 w-1/2 lg:w-1/3 h-64 decoration opacity-25 pointer-events-none">
+</div>
+
+<footer class="mt-6 flex flex-col items-center justify-center px-4">
+    <div class="mb-2">
+        <span class="text-sm text-gray-600">Hey, I know my rights, and they're all reserved! Keep it cool.</span>
+    </div>
+</footer>
+
+</body>
+</html>
