@@ -27,8 +27,8 @@
         "@type": "BlogPosting",
         "image": "{{ image:permalink }}",
         "url": "{{ permalink }}",
-        "headline": "{{ title }}",
-        "alternativeHeadline": "{{ summary }}",
+        "headline": "{{ title | sanitize }}",
+        "alternativeHeadline": "{{ summary | sanitize }}",
         "dateCreated": "{{ updated_at format='Y-m-d H:i:s' }}",
         "datePublished": "{{ updated_at format='Y-m-d H:i:s' }}",
         "dateModified": "{{ updated_at format='Y-m-d H:i:s' }}",
@@ -41,8 +41,13 @@
             "name": "Luke Downing",
             "url": "https://downing.tech"
         },
+        "publisher": {
+            "@type": "Person",
+            "name": "Luke Downing",
+            "url": "https://downing.tech"
+        },
         "mainEntityOfPage": "True",
         "genre":["Programming","Web development"],
-        "articleBody": "{{ content | strip_tags }}"
+        "articleBody": "{{ content | strip_tags | sanitize }}"
     }
 </script>
