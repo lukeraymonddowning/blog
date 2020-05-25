@@ -15,5 +15,10 @@
     ],
     "theme_color": "#ffffff",
     "background_color": "#ffffff",
-    "display": "standalone"
+    "display": "standalone",
+    "start_url": "https://downing.tech/",
+    "url": "https://downing.tech",
+    "lang": "",
+    "screenshots": [],
+    "orientation": "portrait"
 }
