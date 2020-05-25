@@ -1,0 +1,26 @@
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    {{ nav from="/" include_home="true" }}
+    <url>
+        <loc>{{ permalink }}</loc>
+        <lastmod>{{ updated_at format="Y-m-d" }}</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>{{ if url == homepage }}0.8{{ else }}0.5{{ /if }}</priority>
+    </url>
+    {{ collection :from="pages" }}
+    <url>
+        <loc>{{ permalink }}</loc>
+        <lastmod>{{ last_modified format="Y-m-d" }}</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    {{ /collection }}
+    {{ collection :from="blogs" }}
+    <url>
+        <loc>{{ permalink }}</loc>
+        <lastmod>{{ last_modified format="Y-m-d" }}</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1</priority>
+    </url>
+    {{ /collection }}
+    {{ /nav }}
+</urlset>
