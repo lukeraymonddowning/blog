@@ -20,3 +20,29 @@
 <div>
     {{ content }}
 </div>
+
+<script type="application/ld+json">
+    {
+        "@context":"http://schema.org",
+        "@type": "BlogPosting",
+        "image": "{{ image:permalink }}",
+        "url": "{{ permalink }}",
+        "headline": "{{ title }}",
+        "alternativeHeadline": "{{ summary }}",
+        "dateCreated": "{{ updated_at format='Y-m-d H:i:s' }}",
+        "datePublished": "{{ updated_at format='Y-m-d H:i:s' }}",
+        "dateModified": "{{ updated_at format='Y-m-d H:i:s' }}",
+        "inLanguage": "en-GB",
+        "isFamilyFriendly": "true",
+        "copyrightYear": "{{ updated_at format='Y' }}",
+        "copyrightHolder": "Luke Raymond Downing",
+        "author": {
+            "@type": "Person",
+            "name": "Luke Downing",
+            "url": "https://downing.tech"
+        },
+        "mainEntityOfPage": "True",
+        "genre":["Programming","Web development"],
+        "articleBody": "{{ content | strip_tags }}"
+    }
+</script>
