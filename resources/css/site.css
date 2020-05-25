@@ -34,11 +34,11 @@ blockquote {
 
 
 #main a {
-    @apply .text-blue-500
+    @apply .text-blue-700
 }
 
 #main a:hover {
-    @apply .text-blue-700
+    @apply .text-blue-900
 }
 
 #main ol li {
