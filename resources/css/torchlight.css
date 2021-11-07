@@ -13,7 +13,7 @@ pre {
  colors extend edge to edge.
 */
 pre code.torchlight {
-    @apply block py-4 min-w-max;
+    @apply block py-4 min-w-max overflow-x-auto;
 }
 
 /*
