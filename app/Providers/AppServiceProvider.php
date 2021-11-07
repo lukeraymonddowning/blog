@@ -2,8 +2,12 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
+use Statamic\Facades\Markdown;
+use Statamic\Facades\User;
 use Statamic\Statamic;
+use Torchlight\Commonmark\V1\TorchlightExtension;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,7 +28,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // Statamic::script('app', 'cp');
-        // Statamic::style('app', 'cp');
+        Markdown::addExtension(function () {
+            return new TorchlightExtension();
+        });
     }
 }

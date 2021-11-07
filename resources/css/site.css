@@ -24,14 +24,9 @@ p {
     @apply .mb-4 .text-gray-700;
 }
 
-pre {
-    @apply .my-6 .p-6 .bg-gray-100 .rounded-md .shadow-md .overflow-x-auto .w-full
-}
-
 blockquote {
     @apply text-xl .text-gray-900 .font-bold .border-gray-900 .border-l-4 .pl-4
 }
-
 
 #main a {
     @apply .text-blue-700

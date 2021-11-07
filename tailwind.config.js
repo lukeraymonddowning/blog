@@ -7,7 +7,10 @@ module.exports = {
         extend: {
             colors: {
                 'teal': '#9cdbff',
-            }
+            },
+            minWidth: {
+                'max': '100%',
+            },
         }
     }
 }

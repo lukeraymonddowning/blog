@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Statamic\Facades\User;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -23,8 +25,11 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->registerPolicies();
+        // We don't want to have to log in locally
+        if ($this->app->environment('local')) {
+            Auth::login(User::findByEmail('l.r.downing@icloud.com'));
+        }
 
-        //
+        $this->registerPolicies();
     }
 }
